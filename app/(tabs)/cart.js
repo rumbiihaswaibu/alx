@@ -4,10 +4,12 @@ import { Layout, Text, Button, Card, useTheme } from '@ui-kitten/components';
 import { Minus, Plus, Backspace, ShoppingCart } from 'phosphor-react-native'; // Import icons from Phosphor
 import { useDispatch, useSelector } from 'react-redux';
 import { removeFromCart, updateItemQuantity } from '../../store/cartSlice'; // Import actions
+import { useRouter } from 'expo-router';
 
 const CartScreen = ({ navigation }) => {
     const dispatch = useDispatch();
     const theme = useTheme();
+    const router = useRouter();
 
     // Get cart items from Redux store
     const cartItems = useSelector(state => state.cart.items);
@@ -97,7 +99,7 @@ const CartScreen = ({ navigation }) => {
                                 UGX {getTotalPrice().toLocaleString()}
                             </Text>
                         </View>
-                        <Button style={styles.checkoutButton} onPress={() => navigation.navigate('Checkout')}>
+                        <Button style={styles.checkoutButton} onPress={() => router.push('checkout')}>
                             Checkout
                         </Button>
                     </Layout>

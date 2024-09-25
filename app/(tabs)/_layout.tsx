@@ -70,6 +70,12 @@ export default function TabLayout() {
         name="account"
         options={{
           title: 'Account',
+          headerShown: true,
+          headerLeft: () => (
+            <TouchableOpacity onPress={() => router.back()}>
+              <ArrowLeft size={24} color={activeTintColor} style={{ marginLeft: 10 }} />
+            </TouchableOpacity>
+          ),
           tabBarIcon: ({ color, focused }) => (
             <User size={24} color={color} weight={focused ? 'fill' : 'regular'} />
           ),
