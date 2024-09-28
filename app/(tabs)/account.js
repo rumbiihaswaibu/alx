@@ -2,10 +2,12 @@ import React, { useState } from 'react';
 import { SafeAreaView, StyleSheet, View, FlatList } from 'react-native';
 import { Text, Layout, Divider, Modal, Button, Card, ListItem } from '@ui-kitten/components';
 import { ArrowLeft, BellRinging, Cube, User, House, Question, Headphones, SignOut, CaretRight, WarningCircle } from "phosphor-react-native";
+import { useRouter } from 'expo-router';
 
 
 const AccountScreen = () => {
   const [visible, setVisible] = useState(false);
+  const router = useRouter()
 
   const data = [
     { title: 'My Orders', icon: (props) => <Cube size={20} {...props} />, route: 'orders' },
@@ -17,8 +19,7 @@ const AccountScreen = () => {
     { title: 'Logout', icon: (props) => <SignOut size={20} color='red' {...props} />, style: { color: 'red' }, route: 'Logout' },
   ];
 
-  const renderItem = ({ item }) => (
-    <ListItem
+  const renderItem = ({ item }) =>(<ListItem
       title={item.title}
       accessoryLeft={item.icon}
       accessoryRight={(props) => <CaretRight size={16} {...props} />}
@@ -28,10 +29,10 @@ const AccountScreen = () => {
           setVisible(true);
         } else {
           // Handle navigation
+          router.push(item.route)
         }
       }}
-    />
-  );
+    />)
 
   const handleLogout = () => {
     // Logout logic

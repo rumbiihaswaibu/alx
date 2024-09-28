@@ -37,18 +37,20 @@ const CartScreen = ({ navigation }) => {
     };
 
     const renderCartItem = (item) => (
-        <Card style={{ marginBottom: 8, padding: 0 }} key={item._id}>
+        <Layout style={{ marginBottom: 8, borderWidth: 1, borderColor: 'rgb(228, 233, 242)', borderRadius: 5, padding: 10, }} key={item._id}>
             <View style={styles.cartItem}>
-                {/* Remove Icon */}
-                <TouchableOpacity style={styles.removeIcon} onPress={() => handleRemoveItem(item)}>
-                    <Backspace size={30} color={theme['color-basic-600']} />
-                </TouchableOpacity>
                 <Image
                     source={{ uri: 'https://via.placeholder.com/80' }}
                     style={styles.productImage}
                 />
                 <View style={styles.productInfo}>
-                    <Text style={{ fontSize: 14 }}>{item.title}</Text>
+                    <View style={{ flexDirection: 'row' }}>
+                        <Text style={{ fontSize: 14, flexGrow: 1 }} numberOfLines={1} ellipsizeMode='tail' >{item.title}</Text>
+                        <TouchableOpacity style={styles.removeIcon} onPress={() => handleRemoveItem(item)}>
+                            <Backspace size={25} color={theme['color-basic-600']} />
+                        </TouchableOpacity>
+                    </View>
+
                     <Text style={{ fontSize: 12 }} appearance='hint'>Size: M | color: red</Text>
                     <Text category='s1' style={styles.price}>UGX {item.price.toLocaleString()}</Text>
                     <View style={styles.quantityContainer}>
@@ -70,7 +72,7 @@ const CartScreen = ({ navigation }) => {
                     </View>
                 </View>
             </View>
-        </Card>
+        </Layout>
     );
 
     const renderEmptyCartMessage = () => (
@@ -121,9 +123,11 @@ const styles = StyleSheet.create({
         position: 'relative', // For positioning remove icon
     },
     removeIcon: {
-        position: 'absolute',
-        top: -15,
-        right: -20,
+        // position: 'absolute',
+        // top: -15,
+        // right: -20,
+        // width: 30,
+        marginLeft: 10,
         zIndex: 1, // Ensure the icon is above other elements
     },
     productImage: {

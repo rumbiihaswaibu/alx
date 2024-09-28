@@ -1,8 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { View, StyleSheet } from 'react-native';
-import { Layout, Text, Card, Button, Tab, TabView, BottomNavigation, BottomNavigationTab } from '@ui-kitten/components';
-import { ArrowLeft, MagnifyingGlass, House, Bag, ShoppingCart, Heart, UserCircle } from 'phosphor-react-native';
-
+import { Layout, Text, Card, Button, Tab, TabView } from '@ui-kitten/components';
 
 // Dummy order data
 const orders = [

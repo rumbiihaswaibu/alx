@@ -1,8 +1,10 @@
 import React, { useState } from 'react';
 import { SafeAreaView, ScrollView, View, Image, StyleSheet, Modal } from 'react-native';
-import { Layout, Text, Button, Card, Input } from '@ui-kitten/components';
+import { Layout, Text, Button, Card, Input, useTheme } from '@ui-kitten/components';
 import LinkLogo from '../assets/LinkLogo';
-import { useSelector } from 'react-redux'; // Import useSelector to access the cart state
+import { useSelector } from 'react-redux';
+import { Truck, Clock } from 'phosphor-react-native'; // Phosphor icons for location and time
+import { router } from 'expo-router';
 
 const CheckoutScreen = () => {
     const [isModalVisible, setModalVisible] = useState(false);
@@ -16,6 +18,7 @@ const CheckoutScreen = () => {
     const [country, setCountry] = useState('');
 
     const cartItems = useSelector(state => state.cart.items); // Get cart items from Redux store
+    const theme = useTheme();
 
     // Toggle address modal
     const toggleModal = () => {
@@ -33,6 +36,14 @@ const CheckoutScreen = () => {
     // Calculate total price based on cart items
     const getTotalPrice = () => {
         return cartItems.reduce((total, item) => total + item.price * (item.quantity || 1), 0);
+    };
+
+    // Helper function to display variants (color and size) conditionally
+    const displayVariants = (item) => {
+        const variants = [];
+        if (item.selectedColor) variants.push(`Color: ${item.selectedColor.colorName}`);
+        if (item.selectedSize) variants.push(`Size: ${item.selectedSize}`);
+        return variants.length ? variants.join(' | ') : null;
     };
 
     return (
@@ -65,70 +76,65 @@ const CheckoutScreen = () => {
                 <Layout style={styles.shippingContainer}>
                     <Text category='s1'>Order Items</Text>
                     {cartItems.map((item) => (
-                        <Card style={styles.card} key={item.id}>
+                        <Layout style={styles.card} key={item.id}>
                             <View style={styles.productContainer}>
                                 <Image
                                     source={{ uri: item.imageUrl || 'https://via.placeholder.com/80' }}
                                     style={styles.productImage}
                                 />
                                 <View style={styles.productInfo}>
-                                    <Text category='s1'>{item.title}</Text>
-                                    <Text appearance='hint' category='c1'>{item.description}</Text>
-                                    <Text category='s1' style={styles.productPrice}>UGX {item.price.toLocaleString()}</Text>
+                                    <Text category='s1' numberOfLines={1}>{item.title}</Text>
+                                    {displayVariants(item) && (
+                                        <Text appearance='hint' >{displayVariants(item)}</Text>
+                                    )}
+                                    <Text category='s1' style={{ ...styles.productPrice, color: theme['color-primary-default'] }}>UGX {item.price.toLocaleString()}</Text>
                                     <Text appearance='hint' category='c2'>Quantity: {item.quantity}</Text>
                                 </View>
                             </View>
-                        </Card>
+                        </Layout>
                     ))}
                 </Layout>
 
-                {/* Shipping Options */}
+                {/* Shipping Options Section */}
                 <Layout style={styles.shippingContainer}>
-                    <View style={styles.shippingHeader}>
-                        <Text category='s1'>Select Shipping</Text>
-                        <Text style={styles.seeOptions}>See all options</Text>
-                    </View>
-                    <Card style={styles.shippingOption}>
-                        <LinkLogo />
-                        <View>
-                            <View style={styles.shippingInfo}>
-                                <Text category='s1'>Link Bus Couriers</Text>
-                                <Text appearance='hint' style={{ marginVertical: 3 }} category='c1'>Estimated arrived 9 - 10 June</Text>
-                            </View>
-                            <Text category='s1' style={styles.shippingPrice}>UGX 50,000</Text>
+                    <Text category='s1'>Select Shipping</Text>
+
+                    {/* Shipping Option 1 */}
+                    <Layout style={styles.shippingOption}>
+                        <View style={styles.optionLogo}>
+                            <LinkLogo />
                         </View>
-                    </Card>
+                        <View style={styles.shippingDetails}>
+                            <View style={styles.shippingInfo}>
+                                <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
+                                    <Text category='s1'>Link Bus Couriers </Text>
+                                    <Text category='s1' style={[styles.shippingPrice, { color: theme['color-primary-default'] }]}>UGX 50,000</Text>
+                                </View>
+                                <View style={styles.shippingMeta}>
+                                    <Truck size={20} color={theme['color-primary-default']} />
+                                    <Text appearance='hint' category='c2' style={styles.metaText}>Hoima District</Text>
+                                </View>
+                                <View style={styles.shippingMeta}>
+                                    <Clock size={20} color={theme['color-primary-default']} />
+                                    <Text appearance='hint' category='c2' style={styles.metaText}>Estimated arrival: 5 hours</Text>
+                                </View>
+                            </View>
+
+                        </View>
+                    </Layout>
                 </Layout>
 
-                {/* Note Input */}
-                <Layout style={styles.noteContainer}>
-                    <Text category='s1'>Note:</Text>
-                    <Input placeholder='Type any message...' style={styles.noteInput} />
-                </Layout>
+                {/* Subtotal and Total */}
 
-                {/* Subtotal Display */}
-                <Layout style={styles.subtotalContainer}>
-                    <Text category='s1'>Subtotal, {cartItems.length} {cartItems.length > 1 ? 'items' : 'item'}</Text>
-                    <Text category='s1' style={styles.subtotalPrice}>UGX {getTotalPrice().toLocaleString()}</Text>
-                </Layout>
-
-                {/* Payment Methods */}
-                <Layout style={styles.paymentMethodContainer}>
-                    <Text category='s1'>Payment Method</Text>
-                    <View style={styles.paymentMethods}>
-                        <Button style={styles.paymentButton} appearance='outline'>Cash</Button>
-                        <Button style={styles.paymentButton} appearance='outline'>Bank Transfer</Button>
-                    </View>
-                </Layout>
             </ScrollView>
 
             {/* Footer: Total Amount and Checkout Button */}
             <Layout style={styles.footer}>
                 <View>
                     <Text category='s1'>Total</Text>
-                    <Text category='h6' style={styles.totalPrice}>UGX {getTotalPrice().toLocaleString()}</Text>
+                    <Text category='h6' style={{ ...styles.totalPrice, color: theme['color-primary-default'] }}>UGX {(getTotalPrice() + 50000).toLocaleString()}</Text>
                 </View>
-                <Button style={styles.checkoutButton}>Checkout</Button>
+                <Button onPress={() => router.push({ pathname: 'payments', params: { amount: (getTotalPrice() + 50000) } })} style={styles.checkoutButton}>Pay Now</Button>
             </Layout>
 
             {/* Modal for Adding Shipping Address */}
@@ -199,10 +205,9 @@ const CheckoutScreen = () => {
                     </View>
                 </View>
             </Modal>
-        </SafeAreaView>
+        </SafeAreaView >
     );
 };
-
 
 const styles = StyleSheet.create({
     container: {
@@ -213,135 +218,115 @@ const styles = StyleSheet.create({
         padding: 16,
     },
     card: {
-        marginVertical: 8,
-    },
-    addressContainer: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        marginTop: 10,
-    },
-    addressLabel: {
-        backgroundColor: 'rgba(255, 51, 51, 0.16)',
+        marginVertical: 5,
         borderWidth: 1,
-        color: '#FF3333',
-        borderColor: '#FF3333',
-        fontSize: 9,
-        borderRadius: 4,
-        height: 20,
-        paddingHorizontal: 8,
-        paddingVertical: 2,
-        marginRight: 12,
-    },
-    addressInfo: {
-        flex: 1,
-    },
-    contact: {
-        marginTop: 4,
-    },
-    addAddressButton: {
-        marginVertical: 16,
+        borderColor: 'rgb(228, 233, 242)',
+        padding: 10,
+        borderRadius: 5,
     },
     productContainer: {
         flexDirection: 'row',
         alignItems: 'center',
     },
     productImage: {
-        width: 80,
-        height: 80,
-        borderRadius: 8,
+        width: 75,
+        height: 75,
         marginRight: 16,
+        borderRadius: 5,
     },
     productInfo: {
         flex: 1,
     },
     productPrice: {
-        color: '#FF7043',
-        fontWeight: 'bold',
         marginTop: 8,
+        fontWeight: 'bold',
     },
     shippingContainer: {
-        marginVertical: 16,
-    },
-    shippingHeader: {
-        flexDirection: 'row',
-        justifyContent: 'space-between',
-        marginBottom: 8,
-    },
-    seeOptions: {
-        color: '#FF7043',
+        marginBottom: 24,
     },
     shippingOption: {
+        // flexDirection: 'row',
+        // alignItems: 'center',
+        borderWidth: 1,
+        borderColor: 'rgb(228, 233, 242)',
+        borderRadius: 5,
+        padding: 10,
+        width: '100%',
+        marginVertical: 8,
+    },
+    optionLogo: {
+        // marginRight: 16,
+    },
+    logo: {
+        width: 50,
+        height: 50,
+    },
+    shippingDetails: {
+        flex: 1,
+        justifyContent: 'space-between',
         flexDirection: 'row',
+        alignItems: 'center',
+    },
+    shippingInfo: {
+        flex: 1,
+    },
+    shippingMeta: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        marginTop: 4,
+    },
+    metaText: {
+        marginLeft: 8,
     },
     shippingPrice: {
-        color: '#FF7043',
         fontWeight: 'bold',
-    },
-    noteContainer: {
-        marginVertical: 16,
-    },
-    noteInput: {
-        marginTop: 8,
-    },
-    subtotalContainer: {
-        flexDirection: 'row',
-        justifyContent: 'space-between',
-        alignItems: 'center',
-        marginTop: 16,
-    },
-    subtotalPrice: {
-        color: '#FF7043',
-        fontWeight: 'bold',
-    },
-    paymentMethodContainer: {
-        marginTop: 16,
-    },
-    paymentMethods: {
-        flexDirection: 'row',
-        justifyContent: 'space-between',
-        marginTop: 8,
-    },
-    paymentButton: {
-        flex: 1,
-        marginHorizontal: 8,
     },
     footer: {
         flexDirection: 'row',
         justifyContent: 'space-between',
         alignItems: 'center',
         padding: 16,
+        backgroundColor: '#F7F9FC',
         borderTopWidth: 1,
-        borderColor: '#E0E0E0',
+        borderColor: '#E4E9F2',
     },
     totalPrice: {
-        color: '#FF7043',
         fontWeight: 'bold',
     },
     checkoutButton: {
-        backgroundColor: '#FF7043',
-        borderColor: '#FF7043',
+        // flex: 1,
+        marginLeft: 16,
     },
     modalContainer: {
         flex: 1,
         justifyContent: 'center',
-        alignItems: 'center',
         backgroundColor: 'rgba(0, 0, 0, 0.5)',
+        padding: 16,
     },
     modalContent: {
-        width: '90%',
         backgroundColor: 'white',
         borderRadius: 8,
         padding: 16,
-        alignItems: 'center',
     },
     input: {
-        marginVertical: 8,
-        width: '100%',
+        marginBottom: 16,
     },
     saveButton: {
         marginTop: 16,
-        width: '100%',
     },
+    addressLabel: {
+        marginLeft: 10,
+        paddingHorizontal: 6,
+        paddingVertical: 4,
+        backgroundColor: '#EDF1F7',
+        borderRadius: 6,
+    },
+    contact: {
+        marginTop: 8,
+    },
+    addAddressButton: {
+        marginTop: 16,
+    }
 });
 
 export default CheckoutScreen;
