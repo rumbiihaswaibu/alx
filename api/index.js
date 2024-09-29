@@ -112,6 +112,29 @@ export const api = createApi({
         body: { email, password },
       }),
     }),
+    getAddress: builder.query({
+      query: () => 'address', // Adjust to your actual endpoint for fetching addresses
+    }),
+    createAddress: builder.mutation({
+      query: (addressData) => ({
+        url: 'address', // Adjust to your actual endpoint for creating addresses
+        method: 'POST',
+        body: addressData,
+      }),
+    }),
+    deleteAddress: builder.mutation({
+      query: (addressId) => ({
+        url: `address/${addressId}`, // Adjust to your actual endpoint for deleting addresses
+        method: 'DELETE',
+      }),
+    }),
+    updateAddress: builder.mutation({
+      query: ({ id, data }) => ({
+        url: `address/${id}`, // Adjust to your actual endpoint for updating addresses
+        method: 'PUT',
+        body: data,
+      }),
+    }),
   }),
 })
 
@@ -151,4 +174,8 @@ export const {
   useGetDraftProductQuery,
   useUpdateProductMutation,
   useLoginMutation,
+  useGetAddressQuery,
+  useCreateAddressMutation,
+  useUpdateAddressMutation,
+  useDeleteAddressMutation,
 } = api

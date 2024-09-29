@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { View, StyleSheet } from 'react-native';
 import { Layout, Text, Card, Button, Tab, TabView } from '@ui-kitten/components';
+import { useRouter } from 'expo-router';
 
 // Dummy order data
 const orders = [
@@ -34,8 +35,9 @@ const orders = [
 ];
 
 // Reusable Order Card Component
-const OrderCard = ({ order }) => (
-    <Card style={styles.card}>
+const OrderCard = ({ order }) => {
+    const router = useRouter()
+    return (<Card style={styles.card}>
         <View style={styles.cardHeader}>
             <Text category='s1' style={styles.orderNumber}>Order №{order.orderNumber}</Text>
             <Text category='c1' appearance='hint' style={styles.orderDate}>{order.date}</Text>
@@ -49,8 +51,8 @@ const OrderCard = ({ order }) => (
             <Button style={styles.detailsButton} size='small' appearance='outline'>Details</Button>
             <Text category='c1' style={styles.status}>{order.status}</Text>
         </View>
-    </Card>
-);
+    </Card>)
+};
 
 const OrdersScreen = ({ navigation }) => {
     const [selectedIndex, setSelectedIndex] = useState(0);
