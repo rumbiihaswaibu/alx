@@ -62,7 +62,7 @@ const SidebarMenu = ({ route }) => {
                 <MenuItem
                     title={subcategory.name}
                     key={subcategory.id}
-                    onPress={() => router.push(`/ads/category/${subcategory.id}`)}
+                    onPress={() => router.push({pathname:`/ads/category/${subcategory.id}`,params:{category:subcategory.name}})}
                 />
             );
         });

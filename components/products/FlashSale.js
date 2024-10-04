@@ -1,43 +1,65 @@
 import React, { useState, useEffect } from 'react';
-import { ScrollView, Image, View } from 'react-native';
-import { Layout, Text, Card, useTheme, Button } from '@ui-kitten/components';
-import { Flashlight, Heart, Lightning } from 'phosphor-react-native';
-// import { View } from 'react-native-reanimated/lib/typescript/Animated';
+import { ScrollView, Image, View, StyleSheet } from 'react-native';
+import { Layout, Text, useTheme } from '@ui-kitten/components';
+import { Lightning } from 'phosphor-react-native';
+import Animated, { Easing, useSharedValue, withTiming, useAnimatedStyle } from 'react-native-reanimated';
+
+// Countdown Timer Logic
+const calculateTimeLeft = (expiryDate) => {
+  const difference = new Date(expiryDate) - new Date();
+  let timeLeft = {};
+
+  if (difference > 0) {
+    timeLeft = {
+      hours: Math.floor((difference / (1000 * 60 * 60)) % 24),
+      minutes: Math.floor((difference / 1000 / 60) % 60),
+      seconds: Math.floor((difference / 1000) % 60),
+    };
+  }
+
+  return timeLeft;
+};
+
+// Digital Clock Style Component
+const FlipClockDigit = ({ digit }) => {
+  const rotation = useSharedValue(0);
+
+  useEffect(() => {
+    rotation.value = withTiming(360, {
+      duration: 500,
+      easing: Easing.linear,
+    });
+  }, [digit]);
+
+  const animatedStyle = useAnimatedStyle(() => {
+    return {
+      transform: [{ rotateX: `${rotation.value}deg` }],
+    };
+  });
+
+  return (
+    <Animated.View style={[styles.flipDigit, animatedStyle]}>
+      <Text style={styles.digitText}>{digit}</Text>
+    </Animated.View>
+  );
+};
 
 const FlashSale = () => {
-  // Dummy flash sale products
-  const theme = useTheme()
+  const theme = useTheme();
   const flashSaleProducts = [
-    { id: 1, title: 'Chocolate Cake', discount: 40, image: 'https://via.placeholder.com/100' },
-    { id: 2, title: 'Donut Box', discount: 25, image: 'https://via.placeholder.com/100' },
-    { id: 3, title: 'Cookies Pack', discount: 30, image: 'https://via.placeholder.com/100' },
-    { id: 4, title: 'Cupcake', discount: 35, image: 'https://via.placeholder.com/100' },
-    { id: 5, title: 'Pastry', discount: 50, image: 'https://via.placeholder.com/100' },
+    { id: 1, title: 'Chocolate Cake', discount: 40, image: require('../../assets/placeholder.png') },
+    { id: 2, title: 'Donut Box', discount: 25, image: require('../../assets/placeholder.png') },
+    { id: 3, title: 'Cookies Pack', discount: 30, image: require('../../assets/placeholder.png') },
+    { id: 4, title: 'Cupcake', discount: 35, image: require('../../assets/placeholder.png') },
+    { id: 5, title: 'Pastry', discount: 50, image: require('../../assets/placeholder.png') },
   ];
 
-  const expiryDate = '2024-10-01T23:59:59'; // Replace with actual expiry date
-
-  // Countdown Timer Logic
-  const calculateTimeLeft = () => {
-    const difference = new Date(expiryDate) - new Date();
-    let timeLeft = {};
-
-    if (difference > 0) {
-      timeLeft = {
-        hours: Math.floor((difference / (1000 * 60 * 60)) % 24),
-        minutes: Math.floor((difference / 1000 / 60) % 60),
-        seconds: Math.floor((difference / 1000) % 60),
-      };
-    }
-
-    return timeLeft;
-  };
-
-  const [timeLeft, setTimeLeft] = useState(calculateTimeLeft());
+  const expiryDate = '2024-11-01T23:59:59'; // Replace with actual expiry date
+  const [timeLeft, setTimeLeft] = useState(calculateTimeLeft(expiryDate));
 
   useEffect(() => {
     const timer = setInterval(() => {
-      setTimeLeft(calculateTimeLeft());
+      setTimeLeft(calculateTimeLeft(expiryDate));
     }, 1000);
 
     return () => clearInterval(timer);
@@ -45,41 +67,120 @@ const FlashSale = () => {
 
   // Render a product card for each product in the flash sale
   const renderProduct = (product) => (
-    <View key={product.id} style={{ width: 115, paddingVertical: 0, paddingHorizontal: 4, borderRadius: 3 }}>
-      <Image source={{ uri: product.image }} style={{ height: 100,borderRadius: 5, width: '100%' }} />
-      <View style={{ flexDirection: 'row', gap: 1 }}>
-        {/* <Lightning weight='fill' color={theme['color-primary-default']} size={13} /> */}
-        <Text style={{ fontSize: 12, color: theme['color-primary-default'], fontWeight: 'bold' }}> UGX {product.discount}.00000</Text>
+    <View key={product.id} style={styles.productContainer}>
+      <Image source={product.image} style={styles.productImage} />
+      <View style={styles.productDetails}>
+        <Text style={styles.productPrice}>UGX {product.discount}.00000</Text>
+        <Text style={styles.productSold}>240 sold</Text>
       </View>
     </View>
   );
 
   return (
-    <Layout style={{ marginVertical: 10 }}>
+    <Layout style={styles.layout}>
       {/* Flash Sale Header with Countdown */}
-      <Layout style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
-        <View style={{ flexDirection: 'row', marginBottom: 10, gap: 5 }}>
-          <View
-            style={{ padding: 4, borderRadius: 10, marginLeft: 3, backgroundColor: theme['color-primary-default'] }}
-          >
-            <Lightning color="white" weight='fill' size={16} />
+      <View style={styles.header}>
+        <View style={styles.headerLeft}>
+          <View style={[styles.iconWrapper, { backgroundColor: theme['color-primary-default'] }]}>
+            <Lightning color="white" weight="fill" size={25} />
           </View>
-          <Text style={{
-            fontSize: 16,
-            fontWeight: 'bold',
-          }}> Flash Sale</Text>
+          <View>
+            <Text style={styles.flashSaleTitle}>Flash Sale</Text>
+            <Text style={styles.flashSaleSubtitle}>Limited time offer.</Text>
+          </View>
         </View>
-        <Text category="label">
-          {`${timeLeft.hours || '00'}:${timeLeft.minutes || '00'}:${timeLeft.seconds || '00'}`}
-        </Text>
-      </Layout>
+        <View style={styles.countdown}>
+          <FlipClockDigit digit={timeLeft.hours || '00'} />
+          <Text style={styles.colon}>:</Text>
+          <FlipClockDigit digit={timeLeft.minutes || '00'} />
+          <Text style={styles.colon}>:</Text>
+          <FlipClockDigit digit={timeLeft.seconds || '00'} />
+        </View>
+      </View>
 
       {/* Horizontal Scrollable Products */}
       <ScrollView horizontal showsHorizontalScrollIndicator={false}>
-        {flashSaleProducts.map((product) => renderProduct(product))}
+        {flashSaleProducts.map(renderProduct)}
       </ScrollView>
-    </Layout >
+    </Layout>
   );
 };
+
+const styles = StyleSheet.create({
+  layout: {
+    marginVertical: 10,
+  },
+  header: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: 10,
+  },
+  headerLeft: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 5,
+  },
+  iconWrapper: {
+    padding: 4,
+    borderRadius: 10,
+    marginLeft: 3,
+  },
+  flashSaleTitle: {
+    fontSize: 16,
+    fontWeight: 'bold',
+  },
+  flashSaleSubtitle: {
+    fontSize: 14,
+    color: '#555',
+  },
+  countdown: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  flipDigit: {
+    width: 30,
+    height: 30,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: '#000',
+    borderRadius: 5,
+    marginHorizontal: 2,
+  },
+  digitText: {
+    fontSize: 20,
+    color: 'white',
+    fontFamily: 'Digital-7', // Make sure to link your digital font
+  },
+  colon: {
+    fontSize: 24,
+    color: 'black',
+    marginHorizontal: 2,
+  },
+  productContainer: {
+    width: 115,
+    paddingVertical: 0,
+    paddingHorizontal: 4,
+    borderRadius: 3,
+    marginHorizontal: 5,
+  },
+  productImage: {
+    height: 100,
+    borderRadius: 5,
+    width: '100%',
+    backgroundColor: '#ddd',
+  },
+  productDetails: {
+    gap: 3,
+  },
+  productPrice: {
+    fontSize: 13,
+    fontWeight: '600',
+  },
+  productSold: {
+    fontSize: 10,
+    color: '#555',
+  },
+});
 
 export default FlashSale;

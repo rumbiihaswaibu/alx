@@ -2,7 +2,6 @@ import React from 'react';
 import {
   View,
   TouchableOpacity,
-  FlatList,
   StyleSheet,
   Image,
 } from 'react-native';
@@ -22,63 +21,51 @@ const PlaceholderItem = () => {
 
 const GridScreen = () => {
   const navigation = useNavigation();
-  const { data, isLoading, error } = useGetCategoriesQuery();
+  const { data, isLoading } = useGetCategoriesQuery();
   const router = useRouter();
 
-  const renderItem = ({ item, index }) => {
-    return (
-      <TouchableOpacity
-        style={styles.item}
-        onPress={() => router.push(`/category/${item.id}?index=${index}`)}
+  const renderItem = (item, index) => (
+    <TouchableOpacity
+      key={item.id}
+      style={styles.item}
+      onPress={() => router.push(`/category/${item.id}?index=${index}`)}
+    >
+      <Image source={{ uri: item.imageUrl }} style={styles.image} />
+      <Text
+        style={styles.itemText}
+        numberOfLines={1}
+        ellipsizeMode="tail"
       >
-        <View style={styles.item}>
-          <Image source={{ uri: item.imageUrl }} style={styles.image} />
-          <Text
-            style={{
-              fontSize: 12,
-              height: 35,
-              textAlign: 'center',
-            }}
-            numberOfLines={1}
-            ellipsizeMode="tail"
-          >
-            {item.name}
-          </Text>
-        </View>
-      </TouchableOpacity>
-    );
+        {item.name}
+      </Text>
+    </TouchableOpacity>
+  );
+
+  const renderPlaceholderItems = () => {
+    return [...Array(8)].map((_, index) => <PlaceholderItem key={index} />);
   };
 
-  const renderPlaceholderItem = () => {
-    return <PlaceholderItem />;
+  const renderGrid = () => {
+    return (
+      <View style={styles.gridContainer}>
+        {(data?.data.slice(0, 8) || []).map(renderItem)}
+      </View>
+    );
   };
 
   return (
     <View style={styles.container}>
-      <View style={{ flexDirection: 'row', marginBottom: 5, justifyContent: 'space-between' }}>
+      <View style={styles.headerContainer}>
         <Text style={styles.header}>Categories</Text>
         <TouchableOpacity onPress={() => navigation.navigate('Category')}>
-          <Text appearance="hint" style={{ color: 'red', borderBottom: 'solid 2px' }}>
-            View All
-          </Text>
+          <Text style={styles.viewAllText}>View All</Text>
         </TouchableOpacity>
       </View>
+
       {isLoading ? (
-        <FlatList
-          data={[...Array(6)]} // Placeholder data for loading state
-          renderItem={renderPlaceholderItem}
-          horizontal={true}
-          keyExtractor={(_, index) => index.toString()}
-          contentContainerStyle={styles.flatListContent}
-        />
+        <View style={styles.gridContainer}>{renderPlaceholderItems()}</View>
       ) : (
-        <FlatList
-          data={data?.data || []}
-          renderItem={renderItem}
-          horizontal={true}
-          keyExtractor={(item) => item.id}
-          contentContainerStyle={styles.flatListContent}
-        />
+        renderGrid()
       )}
     </View>
   );
@@ -86,40 +73,51 @@ const GridScreen = () => {
 
 const styles = StyleSheet.create({
   container: {
-    // padding: 10,
+    padding: 10,
+  },
+  headerContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    marginBottom: 10,
   },
   header: {
     fontSize: 16,
     fontWeight: 'bold',
-    marginBottom: 10,
   },
-  flatListContent: {
-    justifyContent: 'center',
-    alignItems: 'center',
+  viewAllText: {
+    color: 'red',
+    borderBottomWidth: 2,
+    borderBottomColor: 'red',
+  },
+  gridContainer: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    justifyContent: 'space-between',
   },
   item: {
-    justifyContent: 'center',
+    width: '22%', // This ensures 4 items per row with some space
     alignItems: 'center',
-    height: 90,
-    width: 86,
-    borderRadius: 5,
-    padding: 5,
+    marginBottom: 20,
   },
   image: {
     width: 40,
     height: 40,
-    marginBottom: 10,
+    marginBottom: 8,
+  },
+  itemText: {
+    fontSize: 12,
+    textAlign: 'center',
   },
   placeholderImage: {
     width: 40,
     height: 40,
     backgroundColor: '#E1E9EE',
-    marginBottom: 10,
+    marginBottom: 8,
     borderRadius: 5,
   },
   placeholderText: {
-    width: 60,
-    height: 20,
+    width: 40,
+    height: 15,
     backgroundColor: '#E1E9EE',
     borderRadius: 4,
   },

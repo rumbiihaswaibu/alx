@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { SafeAreaView, ScrollView, View, Image, StyleSheet, TouchableOpacity } from 'react-native';
 import { Layout, Text, Button, Card, useTheme } from '@ui-kitten/components';
-import { Minus, Plus, Backspace, ShoppingCart } from 'phosphor-react-native'; // Import icons from Phosphor
+import { Minus, Plus, Backspace, ShoppingCart, ArrowRight } from 'phosphor-react-native'; // Import icons from Phosphor
 import { useDispatch, useSelector } from 'react-redux';
 import { removeFromCart, updateItemQuantity } from '../../store/cartSlice'; // Import actions
 import { useRouter } from 'expo-router';
@@ -40,7 +40,7 @@ const CartScreen = ({ navigation }) => {
         <Layout style={{ marginBottom: 8, borderWidth: 1, borderColor: 'rgb(228, 233, 242)', borderRadius: 5, padding: 10, }} key={item._id}>
             <View style={styles.cartItem}>
                 <Image
-                    source={{ uri: 'https://via.placeholder.com/80' }}
+                    source={require('../../assets/placeholder.png')}
                     style={styles.productImage}
                 />
                 <View style={styles.productInfo}>
@@ -50,26 +50,29 @@ const CartScreen = ({ navigation }) => {
                             <Backspace size={25} color={theme['color-basic-600']} />
                         </TouchableOpacity>
                     </View>
-
-                    <Text style={{ fontSize: 12 }} appearance='hint'>Size: M | color: red</Text>
-                    <Text category='s1' style={styles.price}>UGX {item.price.toLocaleString()}</Text>
-                    <View style={styles.quantityContainer}>
-                        <Button
-                            size='tiny'
-                            accessoryLeft={() => <Minus size={14} color={theme['color-primary-default']} weight="bold" />}
-                            style={styles.quantityButton}
-                            appearance='outline'
-                            onPress={() => handleQuantityChange(item, item.quantity - 1)}  // Decrease quantity
-                        />
-                        <Text style={styles.quantity}>{item.quantity || 1}</Text>
-                        <Button
-                            size='tiny'
-                            appearance='outline'
-                            accessoryLeft={() => <Plus size={14} color={theme['color-primary-default']} weight="bold" />}
-                            style={styles.quantityButton}
-                            onPress={() => handleQuantityChange(item, item.quantity + 1)}  // Increase quantity
-                        />
+                    <Text appearance='hint'>{`Color: ${item?.selectedColor?.colorName || '--'}`}</Text>
+                    <Text appearance='hint'>{`Size: ${item?.selectedSize || '--'}`}</Text>
+                    <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
+                        <Text category='s1' style={[styles.price, { color: theme['color-primary-default'] }]}>UGX {item.price.toLocaleString()}</Text>
+                        <View style={styles.quantityContainer}>
+                            <Button
+                                size='tiny'
+                                accessoryLeft={() => <Minus size={14} color={theme['color-primary-default']} weight="bold" />}
+                                style={styles.quantityButton}
+                                appearance='outline'
+                                onPress={() => handleQuantityChange(item, item.quantity - 1)}  // Decrease quantity
+                            />
+                            <Text style={styles.quantity}>{item.quantity || 1}</Text>
+                            <Button
+                                size='tiny'
+                                appearance='outline'
+                                accessoryLeft={() => <Plus size={14} color={theme['color-primary-default']} weight="bold" />}
+                                style={styles.quantityButton}
+                                onPress={() => handleQuantityChange(item, item.quantity + 1)}  // Increase quantity
+                            />
+                        </View>
                     </View>
+
                 </View>
             </View>
         </Layout>

@@ -51,7 +51,7 @@ const styles = StyleSheet.create({
         backgroundColor: 'white',
     },
     content: {
-        padding: 16,
+        // padding: 16,
     },
  
     footer: {

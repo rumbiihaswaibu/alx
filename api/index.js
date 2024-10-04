@@ -135,6 +135,13 @@ export const api = createApi({
         body: data,
       }),
     }),
+    makePayment: builder.mutation({
+      query: (data) => ({
+        url: '/payments/mobile-money',
+        method: 'POST',
+        body: data,
+      }),
+    }),
   }),
 })
 
@@ -178,4 +185,5 @@ export const {
   useCreateAddressMutation,
   useUpdateAddressMutation,
   useDeleteAddressMutation,
+  useMakePaymentMutation,
 } = api

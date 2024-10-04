@@ -10,6 +10,7 @@ import { Heart, Star, ArrowLeft, MagnifyingGlass, ShoppingCart } from 'phosphor-
 import { useColorScheme } from '@/hooks/useColorScheme';
 import { ApplicationProvider, TopNavigationAction } from '@ui-kitten/components';
 import * as eva from '@eva-design/eva';
+import { Roboto_400Regular, Roboto_700Bold } from '@expo-google-fonts/roboto';
 
 // Prevent the splash screen from auto-hiding before asset loading is complete.
 SplashScreen.preventAutoHideAsync();
@@ -46,6 +47,14 @@ export default function RootLayout() {
     "color-primary-transparent-400": "rgba(255, 51, 51, 0.32)",
     "color-primary-transparent-500": "rgba(255, 51, 51, 0.40)",
     "color-primary-transparent-600": "rgba(255, 51, 51, 0.48)",
+
+    'text-font-family': 'Roboto_400Regular',
+    'text-heading-1-font-family': 'Roboto_700Bold',
+    'text-heading-2-font-family': 'Roboto_700Bold',
+    'text-heading-3-font-family': 'Roboto_700Bold',
+
+    // Override fonts for buttons or other components if needed
+    'button-font-family': 'Roboto_700Bold',
   };
 
   return (

@@ -1,6 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { View, StyleSheet, Animated, Pressable, PanResponder, Dimensions } from 'react-native';
 import { CaretRight, Check } from 'phosphor-react-native'; // Import Phosphor icons
+import { useTheme } from '@ui-kitten/components';
 
 const IS_NATIVE_DRIVER = true;
 
@@ -16,13 +17,12 @@ const SlideToConfirm = ({
   confirmedPercent = 0.8,
   ballPadding = 0,
   disableOnConfirmed = false,
-  disabled = false, // Add disabled prop
+  disabled = false,
   sliderStyle = {
     height: 52,
     justifyContent: 'center',
     overflow: 'hidden',
     borderWidth: 1,
-    borderColor: '#64748b',
     borderRadius: 5,
   },
   unconfirmedTipText = 'Slide to Pay',
@@ -31,6 +31,7 @@ const SlideToConfirm = ({
   const pan = useRef(new Animated.Value(0)).current;
   const [startPoint, setStartPoint] = useState(null);
   const sliderWidth = Dimensions.get('window').width - 60; // Dynamic width based on screen size
+  const theme = useTheme();
 
   const panResponder = PanResponder.create({
     onMoveShouldSetPanResponder: () => !disabled, // Disable sliding if disabled
@@ -89,9 +90,12 @@ const SlideToConfirm = ({
   }, []);
 
   return (
-    <View style={[{ backgroundColor: disabled ? '#e2e8e0' : defaultColor }, sliderStyle]}>
-      <Animated.View {...panResponder.panHandlers} style={{ transform: [{ translateX: pan }] }}>
-        <Pressable style={[styles.defaultBall, disabled && styles.disabledBall]}>
+    <View style={[{ backgroundColor: theme['color-basic-300']}, sliderStyle,{borderColor: theme['color-basic-500']}]}>
+      <Animated.View
+        {...(disabled ? {} : panResponder.panHandlers)}
+        style={{ transform: [{ translateX: pan }] }}
+      >
+        <Pressable style={[styles.defaultBall, { backgroundColor: theme['color-primary-default'] }, disabled && {backgroundColor:theme['color-primary-300']}]}>
           <Animated.View style={[styles.defaultIcon, { opacity: slideOpacity }]}>
             <CaretRight color={disabled ? '#ccc' : defaultColor} size={defaultIconSize} />
           </Animated.View>

@@ -3,11 +3,29 @@ import { View, Text } from 'react-native'
 import SpinSVG from '@/components/Spinner'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { Layout, useTheme } from '@ui-kitten/components'
-import { useLocalSearchParams } from 'expo-router'
+import { useLocalSearchParams, useRouter } from 'expo-router'
+import { useMakePaymentMutation } from '../api'
 
 const DepositProcessing = () => {
     const theme = useTheme(); // Access the theme colors
     const { amount, msisdn } = useLocalSearchParams();
+    const [payNow] = useMakePaymentMutation()
+    const router = useRouter()
+
+
+    const fetchData = async () => {
+        try {
+            payNow({ amount, msisdn })
+        } catch (error) {
+            // return displayErrorNotification()
+            console.log('error.message===', error.message)
+        }
+    }
+
+
+    useEffect(() => {
+        fetchData()
+    }, [amount, msisdn])
 
 
     return (

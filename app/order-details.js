@@ -38,7 +38,7 @@ const OrderDetailsScreen = () => {
       </Card>
 
       <Card style={styles.card}>
-        <Text category='h6'>Shipping Address:</Text>
+        <Text category='h6' >Shipping Address:</Text>
         <Text category='s1'>{order.shippingAddress}</Text>
       </Card>
 

@@ -38,9 +38,10 @@ const ProductCard = ({ product }) => {
 };
 
 const Ads = () => {
-    const { id } = useLocalSearchParams();
+    const { id, category } = useLocalSearchParams();
     const dispatch = useDispatch();
     const router = useRouter()
+
     const { data, isLoading, isError } = useGetProductsQuery(id ? { category: id } : {});
     const products = data?.data?.docs || [];
 
@@ -99,7 +100,7 @@ const Ads = () => {
         <>
             <Stack.Screen
                 options={{
-                    title: 'Product Details',
+                    title: category,
                     headerRight: () => <TopNavigationAction icon={CartIconWithBadge} />,
                 }}
             />
