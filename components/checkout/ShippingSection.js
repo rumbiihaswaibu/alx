@@ -5,7 +5,7 @@ import DeliveryLogo from './DeliveryLogo';
 
 const ShippingOptions = ({ theme }) => (
   <Layout style={styles.container}>
-    <Text style={{ marginBottom: 5 }} category='s1'>Select Shipping</Text>
+    <Text style={{ marginBottom: 5 }} category='s1'>Shipping</Text>
     <Layout style={styles.option}>
       <View style={{ flexDirection: 'row' }}>
         <DeliveryLogo />

@@ -1,28 +1,39 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, StyleSheet } from 'react-native';
+import { View, Text, StyleSheet, ScrollView } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import { useGetCategoriesQuery } from '../../api';
-import { useNavigation } from '@react-navigation/native';
-import { Layout, Menu, MenuGroup, MenuItem, Drawer, DrawerItem, Divider } from '@ui-kitten/components';
-import { Link, Stack, useRouter } from 'expo-router';
-import { StatusBar } from 'expo-status-bar';
+import { useRouter } from 'expo-router';
+import { Layout, Menu, MenuGroup, MenuItem, Drawer, DrawerItem, Divider, useTheme } from '@ui-kitten/components';
+import { Stack } from 'expo-router';
 
 
-const StarIcon = (props) => (
-    <Icon
-        {...props}
-        size={40}
-        style={{ height: 80 }}
-        name='star'
-    />
-);
-
+// Skeleton Loader Component
+const SkeletonLoader = () => {
+    const getRandomWidth = () => `${Math.floor(Math.random() * 71) + 30}%`; // Generate random widths between 20% and 90%
+    const theme = useTheme()
+    return (
+        <View style={styles.skeletonContainer}>
+            {/* Simulate skeleton for the category items */}
+            <View style={styles.sidebar}>
+                {[...Array(15)].map((_, index) => (
+                    <View key={index} style={[styles.skeletonCategory,{ backgroundColor: theme['color-basic-400']}]} />
+                ))}
+            </View>
+            {/* Simulate skeleton for the subcategory items */}
+            <View style={styles.skeletonSubcategories}>
+                {[...Array(10)].map((_, index) => (
+                    <View key={index} style={[styles.skeletonSubcategory, { backgroundColor: theme['color-basic-400'], width: getRandomWidth() }]} />
+                ))}
+            </View>
+        </View>
+    );
+};
 const SidebarMenu = ({ route }) => {
     const [expandedCategory, setExpandedCategory] = useState(null);
     const [expandedSubcategory, setExpandedSubcategory] = useState(null);
     const { data, isLoading, error } = useGetCategoriesQuery();
     const [selectedIndex, setSelectedIndex] = useState({ row: route?.params?.index || 0 });
-    const router = useRouter()
+    const router = useRouter();
 
     useEffect(() => {
         if (route?.params?.category) {
@@ -41,35 +52,23 @@ const SidebarMenu = ({ route }) => {
     const renderSubcategories = (category) => {
         if (!category || !category.children) return null;
 
-        return category.children.map((subcategory) => {
-            if (expandedSubcategory === subcategory.id && subcategory.children) {
-                return (
-                    <MenuGroup
-                        title={subcategory.name}
-                        key={subcategory.id}
-                        accessoryLeft={StarIcon}
-                    >
-                        {subcategory.children.map((subsubcategory) => (
-                            <MenuItem
-                                key={subsubcategory.id}
-                                title={subsubcategory.name}
-                            />
-                        ))}
-                    </MenuGroup>
-                );
-            }
-            return (
-                <MenuItem
-                    title={subcategory.name}
-                    key={subcategory.id}
-                    onPress={() => router.push({pathname:`/ads/category/${subcategory.id}`,params:{category:subcategory.name}})}
-                />
-            );
-        });
+        return category.children.map((subcategory) => (
+            <MenuItem
+                title={subcategory.name}
+                key={subcategory.id}
+                onPress={() => router.push({ pathname: `/ads/category/${subcategory.id}`, params: { category: subcategory.name } })}
+            />
+        ));
     };
 
     if (isLoading) {
-        return <Text>Loading...</Text>;
+        return (
+            <>
+                <Stack.Screen options={{ title: 'Categories' }} />
+                <Divider />
+                <SkeletonLoader />
+            </>
+        );
     }
 
     if (error) {
@@ -106,11 +105,12 @@ const SidebarMenu = ({ route }) => {
     );
 };
 
+// Styles
 const styles = StyleSheet.create({
     container: {
         flex: 1,
         flexDirection: 'row',
-        background: 'white',
+        backgroundColor: 'white',
     },
     sidebar: {
         width: 130,
@@ -121,14 +121,32 @@ const styles = StyleSheet.create({
     },
     categoryItem: {
         paddingVertical: 10,
-        // flexDirection: 'column',
-        // justifyContent: 'center',
-        // alignItems: 'center',
     },
     subcategoryView: {
         flex: 1,
         backgroundColor: '#fff',
         padding: 10,
+    },
+    // Skeleton Loader Styles
+    skeletonContainer: {
+        flexDirection: 'row',
+        flex: 1,
+    },
+    skeletonCategory: {
+        width: '100%',
+        height: 40,
+        marginBottom: 10,
+        borderRadius: 5,
+    },
+    skeletonSubcategories: {
+        flex: 1,
+        padding: 10,
+        backgroundColor: '#fff',
+    },
+    skeletonSubcategory: {
+        height: 20,
+        marginBottom: 10,
+        borderRadius: 5,
     },
 });
 

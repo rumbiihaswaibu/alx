@@ -31,47 +31,45 @@ const HomeScreen = () => {
           />
         </Layout>
       </Layout>
-      <Layout style={{ borderBottomWidth: 10,marginTop:-50,backgroundColor:'transparent', zIndex:100, padding: 15, borderColor: theme['color-basic-400'] }}>
-          {/* <Text category="h6">Special Offers</Text> */}
-          <View style={{ marginVertical: 8 }}>
-            {/* Add Image Background here */}
-            <ImageBackground
-              source={require('../../assets/images/prom.png')}
-              style={{ height: 140, justifyContent: 'center' }}
-              imageStyle={{ borderRadius: 8 }}
-            >
-              <Layout style={{ flexDirection: 'row', height: '100%', justifyContent: 'space-between', alignItems: 'center', padding: 15, backgroundColor: 'rgba(0, 0, 0, 0.5)', borderRadius: 8 }}>
-                <Layout style={{ backgroundColor: 'transparent' }}>
-                  <Text category="label" appearance="alternative">Limited Time!</Text>
-                  <Text category="h6" appearance="alternative">Get Special Offer</Text>
-                  <Text category="h4" appearance="alternative">Up to 40%</Text>
-                </Layout>
-                <Button size='small' appearance="filled">Shop Now</Button>
+      <Layout style={{ borderBottomWidth: 10, marginTop: -50, backgroundColor: 'transparent', zIndex: 100, padding: 15, borderColor: theme['color-basic-400'] }}>
+        <View style={{ marginVertical: 8 }}>
+          <ImageBackground
+            source={require('../../assets/images/prom.png')}
+            style={{ height: 140, justifyContent: 'center' }}
+            imageStyle={{ borderRadius: 8 }}
+          >
+            <Layout style={{ flexDirection: 'row', height: '100%', justifyContent: 'space-between', alignItems: 'center', padding: 15, backgroundColor: 'rgba(0, 0, 0, 0.5)', borderRadius: 8 }}>
+              <Layout style={{ backgroundColor: 'transparent' }}>
+                <Text category="label" appearance="alternative">Limited Time!</Text>
+                <Text category="h6" appearance="alternative">Get Special Offer</Text>
+                <Text category="h4" appearance="alternative">Up to 40%</Text>
               </Layout>
-            </ImageBackground>
-          </View>
-        </Layout>
+              <Button size='small' appearance="filled">Shop Now</Button>
+            </Layout>
+          </ImageBackground>
+        </View>
+      </Layout>
 
       <ScrollView >
         {/* Special Offers Section */}
-        
+
 
         {/* Categories Section */}
         <Layout style={{ borderBottomWidth: 10, padding: 15, borderColor: theme['color-basic-400'] }} >
           <CategoryGridView />
         </Layout>
 
-        <Layout style={{ borderBottomWidth: 10, padding: 15, borderColor: theme['color-basic-400'] }}>
+        <Layout style={{ borderBottomWidth: 10, paddingLeft: 7, padding: 15, borderColor: theme['color-basic-400'] }}>
           <FlashSale />
         </Layout>
 
         {/* Featured Products Section */}
-        <Layout style={{ borderBottomWidth: 10, padding: 15 }}>
+        <Layout style={{ padding: 15 }}>
           <Text style={{
             fontSize: 16,
             fontWeight: 'bold',
             marginBottom: 15,
-            
+
           }}>Popular Products</Text>
           <Layout style={{ margin: -10 }}>
             <AdsList />

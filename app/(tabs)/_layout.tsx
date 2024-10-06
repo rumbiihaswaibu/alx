@@ -1,22 +1,69 @@
 import { Tabs } from 'expo-router';
-import React from 'react';
-import { House, ListMagnifyingGlass, ShoppingCart, User, ArrowLeft } from 'phosphor-react-native'; // Phosphor icons
+import React, { useEffect } from 'react';
+import { House, ListMagnifyingGlass, ShoppingCart, User, ArrowLeft } from 'phosphor-react-native';
 import { Colors } from '@/constants/Colors';
 import { useColorScheme } from '@/hooks/useColorScheme';
 import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import { useSelector } from 'react-redux';
-import { useRouter } from 'expo-router'; // useRouter from expo-router
+import { useRouter } from 'expo-router';
 import { useTheme } from '@ui-kitten/components';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 export default function TabLayout() {
   const colorScheme = useColorScheme();
   const theme = useTheme();
   const activeTintColor = Colors[colorScheme ?? 'light'].tint;
-  const router = useRouter(); // Hook for expo-router navigation
+  const router = useRouter();
 
   // Get cart item count from Redux store
   const cartItems = useSelector((state) => state.cart.items);
   const cartCount = cartItems.length;
+
+  // Sample user data to store in AsyncStorage
+  const userData = {
+    id: '12345',
+    name: 'John Doe',
+    email: 'johndoe@example.com',
+    phone: '+1234567890',
+    addresses: [
+      {
+        id: '1',
+        label: 'Home',
+        addressLine1: '123 Main Street',
+        addressLine2: 'Apt 4B',
+        city: 'New York',
+        state: 'NY',
+        postalCode: '10001',
+        country: 'USA',
+        isDefault: true
+      },
+      {
+        id: '2',
+        label: 'Work',
+        addressLine1: '456 Office Park',
+        addressLine2: 'Suite 12',
+        city: 'San Francisco',
+        state: 'CA',
+        postalCode: '94107',
+        country: 'USA',
+        isDefault: false
+      }
+    ]
+  };
+
+  // useEffect to save the user data to AsyncStorage
+  useEffect(() => {
+    const saveUserToLocalStorage = async () => {
+      try {
+        await AsyncStorage.setItem('@user', JSON.stringify(userData));
+        console.log('User data saved to local storage.');
+      } catch (error) {
+        console.error('Error saving user data:', error);
+      }
+    };
+
+    saveUserToLocalStorage();
+  }, []);
 
   return (
     <Tabs
@@ -52,7 +99,7 @@ export default function TabLayout() {
       <Tabs.Screen
         name="cart"
         options={{
-          title: 'Cart', // Title for cart
+          title: 'Cart',
           headerShown: true,
           tabBarIcon: ({ color, focused }) => (
             <View style={styles.iconWithBadge}>
@@ -91,9 +138,9 @@ const styles = StyleSheet.create({
   },
   badge: {
     position: 'absolute',
-    right: -10, // Adjust the position as needed
+    right: -10,
     top: -3,
-    backgroundColor: '#d32f2f', // Red background for badge
+    backgroundColor: '#d32f2f',
     borderRadius: 10,
     width: 18,
     height: 18,

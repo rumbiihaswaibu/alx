@@ -13,23 +13,43 @@ const CheckoutScreen = () => {
     const cartItems = useSelector(state => state.cart.items);
     const theme = useTheme();
 
-    const { data: addresses, refetch } = useGetAddressQuery();
-    const [createAddress, { isLoading }] = useCreateAddressMutation();
-
     const getTotalPrice = () => {
         return cartItems.reduce((total, item) => total + item.price * (item.quantity || 1), 0);
     };
 
+    const order = {
+        "orderId": "ORD12345678",
+        "shippingAddress": {
+            "addressLine1": "123 Main St",
+            "addressLine2": "Apt 4B",
+            "city": "Kampala",
+            "state": "Central",
+            "country": "Uganda",
+            "postalCode": "12345",
+            "isDefault": true,
+            "label": "Home"
+        },
+        "items": [],
+        "payment": {
+            "method": "Credit Card",
+            "transactionId": "TX1234567890",
+            "totalAmount": 80.00,
+            "currency": "USD"
+        },
+        "orderStatus": "Pending",
+        "shippingMethod": {
+            "method": "Standard Shipping",
+            "cost": 5.00,
+            "currency": "USD",
+            "estimatedDelivery": "2024-10-10T12:00:00Z"
+        }
+    }
+
     return (
         <SafeAreaView style={styles.container}>
             <ScrollView style={styles.content}>
-                <ShippingAddress
-                    addresses={addresses}
-                    refetch={refetch}
-                    createAddress={createAddress}
-                    isLoading={isLoading}
-                />
-                <OrderItems cartItems={cartItems} theme={theme}/>
+                <ShippingAddress />
+                <OrderItems cartItems={cartItems} theme={theme} />
                 <ShippingOptions theme={theme} />
             </ScrollView>
             <Layout style={styles.footer}>
@@ -53,7 +73,7 @@ const styles = StyleSheet.create({
     content: {
         // padding: 16,
     },
- 
+
     footer: {
         flexDirection: 'row',
         justifyContent: 'space-between',

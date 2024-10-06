@@ -6,6 +6,8 @@ import { useDispatch, useSelector } from 'react-redux';
 import { addToCart } from '../../store/cartSlice';
 import { ShoppingCart, Star, Check } from 'phosphor-react-native';
 import { Stack, useLocalSearchParams, useRouter } from 'expo-router';
+import ProductDetailsSkeleton from '../../components/loading/ProductDetailsSkeleton';
+
 
 const ProductDetailsScreen = () => {
   const { id } = useLocalSearchParams();
@@ -15,12 +17,12 @@ const ProductDetailsScreen = () => {
   const cartItems = useSelector((state) => state.cart.items);
   const cartCount = cartItems.length;
 
-  const { data, isLoading } = useGetProductQuery(id, {
+  const { data, isLoading, isUninitialized } = useGetProductQuery(id, {
     skip: !id,
   });
 
   const product = data?.data;
-  const images = product?.files.length ? product?.files.map((file) => ({ uri: file.url })) : [{ uri: 'https://via.placeholder.com/500' }, { uri: 'https://via.placeholder.com/500' }];
+  const images = product?.files.length ? product?.files.map((file) => ({ uri: file.url })) : [require('../../assets/placeholder.png'), require('../../assets/placeholder.png')];
   const [selectedIndex, setSelectedIndex] = useState(0);
   const [selectedColor, setSelectedColor] = useState({});
   const [selectedSize, setSelectedSize] = useState(null);
@@ -42,12 +44,8 @@ const ProductDetailsScreen = () => {
     </TouchableOpacity>
   );
 
-  if (isLoading) {
-    return (
-      <Layout style={styles.loadingContainer}>
-        <Spinner size="large" />
-      </Layout>
-    );
+  if (isLoading || isUninitialized) {
+    return <ProductDetailsSkeleton />;
   }
 
   return (
@@ -68,7 +66,7 @@ const ProductDetailsScreen = () => {
           >
             {images.map((image, index) => (
               <Layout key={index} style={styles.imageContainer}>
-                <Image source={{ uri: image.uri }} style={styles.image} />
+                <Image source={image} style={styles.image} />
               </Layout>
             ))}
           </ViewPager>
@@ -101,9 +99,6 @@ const ProductDetailsScreen = () => {
                   <Text>4.9</Text>
                 </View>
               </View>
-              {/* <TouchableOpacity style={{ width: 25 }}>
-              <Heart />
-            </TouchableOpacity> */}
             </View>
 
             <View style={{ marginBottom: 10 }}>
@@ -169,7 +164,7 @@ const ProductDetailsScreen = () => {
         <Button
           style={styles.tabButton}
           disabled={!selectedColor.colorCode || !selectedSize}
-          accessoryLeft={() => <ShoppingCart size={20} color="white" />}
+          accessoryLeft={() => <ShoppingCart size={20} weight="bold" color="white" />}
           onPress={handleAddToCart}
         >
           Add to Cart
@@ -300,6 +295,86 @@ const styles = StyleSheet.create({
     borderColor: '#ddd',
     justifyContent: 'center',
     alignItems: 'center',
+  },
+  // Skeleton Styles
+  skeletonContainer: {
+    padding: 16,
+    height: '100%'
+  },
+  skeletonImage: {
+    height: 300,
+    width: '100%',
+    backgroundColor: '#e0e0e0',
+    borderRadius: 10,
+    marginBottom: 20,
+  },
+  skeletonDotsContainer: {
+    flexDirection: 'row',
+    justifyContent: 'center',
+    marginBottom: 20,
+  },
+  skeletonDot: {
+    width: 8,
+    height: 8,
+    backgroundColor: '#e0e0e0',
+    borderRadius: 4,
+    marginHorizontal: 4,
+  },
+  skeletonInfoContainer: {
+    marginBottom: 20,
+  },
+  skeletonTitle: {
+    height: 25,
+    width: '80%',
+    backgroundColor: '#e0e0e0',
+    marginBottom: 10,
+    borderRadius: 5,
+  },
+  skeletonRating: {
+    height: 15,
+    width: '50%',
+    backgroundColor: '#e0e0e0',
+    marginBottom: 5,
+    borderRadius: 5,
+  },
+  skeletonDescription: {
+    height: 15,
+    width: '90%',
+    backgroundColor: '#e0e0e0',
+    marginBottom: 10,
+    borderRadius: 5,
+  },
+  skeletonColors: {
+    height: 30,
+    width: '60%',
+    backgroundColor: '#e0e0e0',
+    marginBottom: 10,
+    borderRadius: 5,
+  },
+  skeletonSizes: {
+    height: 30,
+    width: '60%',
+    backgroundColor: '#e0e0e0',
+    marginBottom: 20,
+    borderRadius: 5,
+  },
+  skeletonBottom: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginTop: 20,
+  },
+  skeletonPrice: {
+    height: 25,
+    width: '40%',
+    backgroundColor: '#e0e0e0',
+    borderRadius: 5,
+  },
+  skeletonButton: {
+    height: 40,
+    width: '40%',
+    backgroundColor: '#e0e0e0',
+    borderRadius: 5,
   },
 });
 

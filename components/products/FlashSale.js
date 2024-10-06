@@ -124,7 +124,7 @@ const styles = StyleSheet.create({
   iconWrapper: {
     padding: 4,
     borderRadius: 10,
-    marginLeft: 3,
+    marginLeft: 7,
   },
   flashSaleTitle: {
     fontSize: 16,
