@@ -4,69 +4,116 @@ import { Layout, Input, Button, Text } from '@ui-kitten/components';
 import LoginIllustration from '../assets/LoginIllustration';
 
 const OtpRegisterScreen = () => {
+  const [step, setStep] = useState(1); // Step tracker
   const [phoneNumber, setPhoneNumber] = useState('');
-  const [otp, setOtp] = useState(''); // Single state to store the OTP as a string
+  const [otp, setOtp] = useState('');
+  const [fullName, setFullName] = useState('');
+  const [password, setPassword] = useState('');
 
   const handleOtpRequest = () => {
     console.log('Sending OTP to:', phoneNumber);
-    // Here, you would typically trigger your API call to send the OTP
+    // Trigger API to send OTP
+    setStep(2); // Move to next step after requesting OTP
   };
 
   const handleOtpVerification = () => {
     console.log('Verifying OTP:', otp);
     // Implement verification logic here
+    setStep(3); // Move to the registration form if OTP is correct
   };
 
-  const handleChange = (text) => {
-    if (text.length <= 4) { // Limit input to 4 characters
-      setOtp(text); // Set OTP to the input value
+  const handleRegistration = () => {
+    console.log('Registering User:', { fullName, phoneNumber, password });
+    // Implement registration logic here
+  };
+
+  const handleChangeOtp = (text) => {
+    if (text.length <= 4) {
+      setOtp(text); // Limit OTP input to 4 digits
     }
   };
 
   return (
-    <Layout style={{flex:1}}>
-    <TouchableWithoutFeedback onPress={Keyboard.dismiss} style={{backgroundColor:'white'}} keyboardShouldPersistTaps='handled'>
-      <Layout style={styles.container}>
-        {/* <Text category='h5' style={{textAlign:'center'}}>OTP Register</Text>
-        <Text category='s1' appearance='hint' style={styles.description}>
-          We will send you a one-time password to your mobile number.
-        </Text>
-        <Input
-          style={styles.input}
-          placeholder='Phone Number'
-          value={phoneNumber}
-          onChangeText={setPhoneNumber}
-          accessoryLeft={() => <Text style={styles.countryCode}>+256</Text>}
-        />
-        <Button style={styles.button} onPress={handleOtpRequest}>
-          Send OTP
-        </Button> */}
-        <LoginIllustration />
+    <Layout style={{ flex: 1 }}>
+      <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+        <Layout style={styles.container}>
 
-        <Text category='h5' style={{textAlign:'center'}}>Enter your OTP Code</Text>
+          {step === 1 && (
+            <>
+              <LoginIllustration />
+              <Text category='h5' style={styles.title}>Enter Phone Number</Text>
+              <Text category='s1' appearance='hint' style={styles.description}>
+                We will send you a one-time password to your mobile number.
+              </Text>
+              <Input
+                style={styles.input}
+                placeholder='Phone Number'
+                value={phoneNumber}
+                onChangeText={setPhoneNumber}
+                accessoryLeft={() => <Text style={styles.countryCode}>+256</Text>}
+              />
+              <Button style={styles.button} onPress={handleOtpRequest}>
+                Send OTP
+              </Button>
+            </>
+          )}
 
-        <Text category='s1' appearance='hint' style={styles.description}>
-        We have sent a verification code to your email address. Please enter your code down below
-        </Text>
+          {step === 2 && (
+            <>
+              <LoginIllustration />
+              <Text category='h5' style={styles.title}>Enter OTP Code</Text>
+              <Text category='s1' appearance='hint' style={styles.description}>
+                We have sent a verification code to your mobile number.
+              </Text>
+              <Input
+                style={styles.otpInput}
+                value={otp}
+                size='large'
+                onChangeText={handleChangeOtp}
+                keyboardType='numeric'
+                maxLength={4}
+                textAlign='center'
+                placeholder='XXXX'
+              />
+              <Text category='s1' appearance='hint' style={styles.description}>
+                Didn’t receive the OTP? Resend OTP
+              </Text>
+              <Button style={styles.button} onPress={handleOtpVerification}>
+                Verify OTP
+              </Button>
+            </>
+          )}
 
-        <Input
-          style={styles.otpInput}
-          value={otp}
-          size='large'
-          onChangeText={handleChange}
-          keyboardType='numeric'
-          maxLength={4} // Limit the length of OTP to 4 digits
-          textAlign='center'
-          placeholder='XXXX'
-        />
-        <Text category='s1' appearance='hint' style={styles.description}>
-            Didn’t you receive the OTP? Resend OTP
-        </Text>
-        <Button style={styles.button} onPress={handleOtpVerification}>
-          Verify OTP
-        </Button>
-      </Layout>
-    </TouchableWithoutFeedback>
+          {step === 3 && (
+            <>
+              <LoginIllustration />
+              <Text category='h5' style={styles.title}>Complete Registration</Text>
+              <Input
+                style={styles.input}
+                placeholder='Full Name'
+                value={fullName}
+                onChangeText={setFullName}
+              />
+              <Input
+                style={styles.input}
+                placeholder='Phone Number'
+                value={phoneNumber}
+                disabled={true} // Phone number is already set, disable it
+              />
+              <Input
+                style={styles.input}
+                placeholder='Password'
+                value={password}
+                onChangeText={setPassword}
+                secureTextEntry={true}
+              />
+              <Button style={styles.button} onPress={handleRegistration}>
+                Complete Registration
+              </Button>
+            </>
+          )}
+        </Layout>
+      </TouchableWithoutFeedback>
     </Layout>
   );
 };
@@ -76,12 +123,13 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     paddingHorizontal: 50,
-    marginHorizontal:'auto',
-    overflow: 'hidden', // Ensure no horizontal scroll happens
+  },
+  title: {
+    textAlign: 'center',
   },
   description: {
     marginVertical: 20,
-    textAlign:'center'
+    textAlign: 'center',
   },
   input: {
     marginBottom: 15,
@@ -89,20 +137,19 @@ const styles = StyleSheet.create({
   button: {
     marginVertical: 10,
   },
-  countryCode: {
-    marginRight: 10,
-    fontWeight: 'bold',
-  },
   otpInput: {
-    width: '90%', // Full width for the OTP input
-    // height: 50,
+    width: '90%',
     marginHorizontal: 'auto',
     borderColor: '#ccc',
     borderWidth: 1,
     borderRadius: 8,
     fontSize: 24,
     textAlign: 'center',
-    marginVertical: 20, // Add margin for better spacing
+    marginVertical: 20,
+  },
+  countryCode: {
+    marginRight: 10,
+    fontWeight: 'bold',
   },
 });
 

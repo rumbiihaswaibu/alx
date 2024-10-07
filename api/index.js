@@ -26,7 +26,7 @@ export const customMiddleware = (api) => (next) => async (action) => {
 export const api = createApi({
   reducerPath: 'api',
   baseQuery: fetchBaseQuery({
-    baseUrl: 'https://alx-xkrn.onrender.com/api/v1/',
+    baseUrl: 'https://simple-maggot-expert.ngrok-free.app/api/v1/',
     prepareHeaders: async (headers, { getState }) => {
       // Retrieve cookies from AsyncStorage
       const storedCookies = await AsyncStorage.getItem('access_token')
@@ -137,10 +137,13 @@ export const api = createApi({
     }),
     makePayment: builder.mutation({
       query: (data) => ({
-        url: '/payments/mobile-money',
+        url: '/payments/momo',
         method: 'POST',
         body: data,
       }),
+    }),
+    validatePhoneNumber: builder.query({
+      query: (msisdn) => `/payments/validate/${msisdn}`,
     }),
   }),
 })
