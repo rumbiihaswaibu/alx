@@ -1,10 +1,10 @@
 import { DarkTheme, DefaultTheme, ThemeProvider } from '@react-navigation/native';
 import { Provider } from 'react-redux'
 import { store } from '../store';
-import { useFonts } from 'expo-font';
+import { loadAsync, useFonts } from 'expo-font';
 import { Stack } from 'expo-router';
 import * as SplashScreen from 'expo-splash-screen';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import 'react-native-reanimated';
 import { Heart, Star, ArrowLeft, MagnifyingGlass, ShoppingCart } from 'phosphor-react-native';
 import { useColorScheme } from '@/hooks/useColorScheme';
@@ -17,18 +17,22 @@ SplashScreen.preventAutoHideAsync();
 
 export default function RootLayout() {
   const colorScheme = useColorScheme();
-  const [loaded] = useFonts({
-    SpaceMono: require('../assets/fonts/SpaceMono-Regular.ttf'),
-  });
+  const [fontLoaded, setFontLoaded] = useState(false);
 
   useEffect(() => {
-    if (loaded) {
-      SplashScreen.hideAsync();
-    }
-  }, [loaded]);
+    const loadFonts = async () => {
+      await loadAsync({
+        'SFPro': require('../assets/fonts/FontsFree-Net-SFProDisplay-Regular.ttf'), // Ensure the path is correct
+        'digital7': require('../assets/fonts/digital_7/digital-7.ttf'),
+      });
+      setFontLoaded(true);
+    };
 
-  if (!loaded) {
-    return null;
+    loadFonts();
+  }, []);
+
+  if (!fontLoaded) {
+    return null; // or a loading spinner
   }
 
   const cThemeRed = {
@@ -48,13 +52,14 @@ export default function RootLayout() {
     "color-primary-transparent-500": "rgba(255, 51, 51, 0.40)",
     "color-primary-transparent-600": "rgba(255, 51, 51, 0.48)",
 
-    'text-font-family': 'Roboto_400Regular',
-    'text-heading-1-font-family': 'Roboto_700Bold',
-    'text-heading-2-font-family': 'Roboto_700Bold',
-    'text-heading-3-font-family': 'Roboto_700Bold',
+    'text-font-family': 'SFPro',
+    'text-heading-1-font-family': 'SFPro',
+    'text-heading-2-font-family': 'SFPro',
+    'text-heading-3-font-family': 'SFPro',
 
     // Override fonts for buttons or other components if needed
-    'button-font-family': 'Roboto_700Bold',
+    'button-font-family': 'SFPro',
+    'font-family': 'SFPro',
   };
 
   return (

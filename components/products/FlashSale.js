@@ -11,9 +11,16 @@ const calculateTimeLeft = (expiryDate) => {
 
   if (difference > 0) {
     timeLeft = {
-      hours: Math.floor((difference / (1000 * 60 * 60)) % 24),
-      minutes: Math.floor((difference / 1000 / 60) % 60),
-      seconds: Math.floor((difference / 1000) % 60),
+      hours: String(Math.floor((difference / (1000 * 60 * 60)) % 24)).padStart(2, '0'), // Format hours
+      minutes: String(Math.floor((difference / 1000 / 60) % 60)).padStart(2, '0'), // Format minutes
+      seconds: String(Math.floor((difference / 1000) % 60)).padStart(2, '0'), // Format seconds
+    };
+  } else {
+    // If time is up, set all values to "00"
+    timeLeft = {
+      hours: '00',
+      minutes: '00',
+      seconds: '00',
     };
   }
 
@@ -90,11 +97,11 @@ const FlashSale = () => {
           </View>
         </View>
         <View style={styles.countdown}>
-          <FlipClockDigit digit={timeLeft.hours || '00'} />
+          <FlipClockDigit digit={timeLeft.hours} />
           <Text style={styles.colon}>:</Text>
-          <FlipClockDigit digit={timeLeft.minutes || '00'} />
+          <FlipClockDigit digit={timeLeft.minutes} />
           <Text style={styles.colon}>:</Text>
-          <FlipClockDigit digit={timeLeft.seconds || '00'} />
+          <FlipClockDigit digit={timeLeft.seconds} />
         </View>
       </View>
 
@@ -150,7 +157,7 @@ const styles = StyleSheet.create({
   digitText: {
     fontSize: 20,
     color: 'white',
-    fontFamily: 'Digital-7', // Make sure to link your digital font
+    fontFamily: 'digital7', // Make sure to link your digital font
   },
   colon: {
     fontSize: 24,

@@ -3,13 +3,15 @@ import { SafeAreaView, ScrollView, View, Image, StyleSheet, TouchableOpacity } f
 import { Layout, Text, Button, Card, useTheme } from '@ui-kitten/components';
 import { Minus, Plus, Backspace, ShoppingCart, ArrowRight } from 'phosphor-react-native'; // Import icons from Phosphor
 import { useDispatch, useSelector } from 'react-redux';
-import { removeFromCart, updateItemQuantity } from '../../store/cartSlice'; // Import actions
+import { removeFromCart, updateItemQuantity } from '../../store/cartSlice';
+import useLogin from '@/hooks/useLogin';
 import { useRouter } from 'expo-router';
 
 const CartScreen = ({ navigation }) => {
     const dispatch = useDispatch();
     const theme = useTheme();
     const router = useRouter();
+    const isLoggedIn = useLogin();
 
     // Get cart items from Redux store
     const cartItems = useSelector(state => state.cart.items);
@@ -104,7 +106,7 @@ const CartScreen = ({ navigation }) => {
                                 UGX {getTotalPrice().toLocaleString()}
                             </Text>
                         </View>
-                        <Button style={styles.checkoutButton} onPress={() => router.push('checkout')}>
+                        <Button style={styles.checkoutButton} onPress={() => router.push(isLoggedIn?'checkout':'otpRegister')}>
                             Checkout
                         </Button>
                     </Layout>

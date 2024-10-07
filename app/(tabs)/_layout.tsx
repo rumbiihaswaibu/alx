@@ -8,12 +8,15 @@ import { useSelector } from 'react-redux';
 import { useRouter } from 'expo-router';
 import { useTheme } from '@ui-kitten/components';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import useLogin from '@/hooks/useLogin';
 
 export default function TabLayout() {
   const colorScheme = useColorScheme();
   const theme = useTheme();
   const activeTintColor = Colors[colorScheme ?? 'light'].tint;
   const router = useRouter();
+  const [isUserExist, setIsUserExist] = React.useState(false);
+  const isLoggedIn = useLogin()
 
   // Get cart item count from Redux store
   const cartItems = useSelector((state) => state.cart.items);
@@ -52,17 +55,16 @@ export default function TabLayout() {
   };
 
   // useEffect to save the user data to AsyncStorage
+
   useEffect(() => {
-    const saveUserToLocalStorage = async () => {
-      try {
-        await AsyncStorage.setItem('@user', JSON.stringify(userData));
-        console.log('User data saved to local storage.');
-      } catch (error) {
-        console.error('Error saving user data:', error);
+    const checkUser = async () => {
+      const user = await AsyncStorage.getItem('@user');
+      if (user) {
+        setIsUserExist(true);
       }
     };
 
-    saveUserToLocalStorage();
+    checkUser();
   }, []);
 
   return (
@@ -97,7 +99,7 @@ export default function TabLayout() {
         }}
       />
       <Tabs.Screen
-        name="cart"
+        name={'cart'}
         options={{
           title: 'Cart',
           headerShown: true,
@@ -127,7 +129,7 @@ export default function TabLayout() {
             <User size={24} color={color} weight={focused ? 'fill' : 'regular'} />
           ),
         }}
-      />
+      /> 
     </Tabs>
   );
 }
